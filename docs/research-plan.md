@@ -144,6 +144,45 @@ fail. Naive magnitude reference-differencing is a NO-GO against quantization —
 families); benign-RL is an equal-norm FT PROXY (need REAL RL checkpoints); binding unchanged
 (weight-space => local/self/TEE only). Figure: fig_verify_smoke.png.
 
+## 4c. REAL-RL CONFOUNDER RESULT (2026-08-18) — GO (replaces the proxy)
+
+The proxy caveat above is now closed against GENUINE 7B RL. Per-component relative-Frobenius
+diff vs the earlier checkpoint of each pair; concentration = top-4 mass + participation ratio
+(PR, out of 224 components = 32 layers x 7 projections).
+
+| class | transition | top-4 mass | PR (of 224) |
+|---|---|---|---|
+| real RL (large) | Olmo-3-7B-Think step_0025->1375 | 0.0219 | 222.3 |
+| real RL (short) | Olmo-3-7B-Think step_0575->0825 | 0.0219 | 222.6 |
+| real RL (from base) | Olmo-3.1-7B-RL-Zero-Math step_0100->2800 | 0.0222 | 222.7 |
+| backdoor (late L20-23) | localized weight-edit | 0.3333 | 12.0 |
+| backdoor (mid L12-15) | localized weight-edit | 0.3333 | 12.0 |
+| backdoor (narrow L22) | localized weight-edit | 1.0000 | 3.0 |
+
+**Real benign RL is MAXIMALLY DIFFUSE (PR ~99.4% of all components); the backdoor is LOCALIZED
+(PR 3-12). No overlap.** Magnitude was deliberately matched (backdoor 0.0015 sits inside the
+real-RL band 0.001-0.003; INT4 quant 0.15 moves weights ~50x MORE than the backdoor yet stays
+diffuse). AUROC {backdoor vs confounder}:
+
+| metric | vs real-RL | vs quant | vs fine-tune | ALL |
+|---|---|---|---|---|
+| concentration (top-4 mass) | 1.00 | 1.00 | 1.00 | **1.00** |
+| concentration (PR) | 1.00 | 1.00 | 1.00 | **1.00** |
+| magnitude | 0.33 | 0.00 | 1.00 | **0.33** |
+
+**VERDICT: GO.** Concentration separates a localized tamper from genuine benign RL (incl.
+RL-from-base) at AUROC 1.0; magnitude does not. Refutes the "RL localizes like tampering"
+concern (arXiv 2606.26474) for these lineages. Figure: fig_verify_realrl.png.
+
+**The one remaining gap (do before main-track):** the tamper here was a constructed localized
+weight-edit, NOT a behaviorally-verified trained trigger backdoor. Same weight footprint (a real
+LoRA backdoor is also localized), but behavioral dormancy (harm+trigger refusal drop, harm-alone
+high) was not re-verified in the real-RL run. Earlier runs (docs/results.md) DID behaviorally
+verify trigger sleepers, but at 1B and against benign fine-tunes, not real 7B RL. Next: one clean
+experiment combining a behaviorally-verified trigger backdoor + real 7B RL. Also feature the INT4
+quantization confounder prominently — it is the most persuasive case (moves weights ~50x more
+than the tamper, stays diffuse) and is exactly why magnitude fails and concentration wins.
+
 ## 5. Full experiments (if smoke tests pass)
 
 - **E1 — The lifecycle baseline (the wedge).** Build the benign-update distribution from many

@@ -2,13 +2,18 @@
 
 **Detecting tampered model updates by the _concentration_ of their weight change, not its magnitude.**
 
-> ⚠️ **Preliminary research, work in progress.** The central claim is validated against a
-> fine-tuning *proxy* for benign RL; the genuine-RL confounder test is **not yet complete** (the
-> sandbox running it expired mid-test). Numbers here are from a 1B-scale proof of concept with a
-> small number of tamper instances. Treat this as a hypothesis with encouraging early evidence,
-> not a settled result. See [docs/research-plan.md](docs/research-plan.md) for the honest status
-> of every claim, and [`experiments/run_real_rl.py`](experiments/run_real_rl.py) for the pending
-> load-bearing experiment.
+> ⚠️ **Preliminary research, work in progress — but the load-bearing test now passes.** The
+> central claim was re-tested against **genuine 7B RL** (OLMo-3 Think RLVR pairs and a full
+> RL-from-base run), not just a fine-tune proxy: real benign RL is **maximally diffuse**
+> (participation ratio ~99% of components) while a localized tamper is not, so **concentration
+> separates them at AUROC 1.0 where magnitude fails (0.33)**. This refutes the concern that RL
+> might localize like tampering (cf. arXiv 2606.26474) for these lineages.
+>
+> **Remaining honest caveats:** the tamper in the real-RL run was a *constructed localized
+> weight-edit*, not a *behaviorally-verified trained trigger backdoor* (same weight footprint, but
+> the behavioral-dormancy check is the next step); one lineage; small number of tamper instances.
+> Not a settled result. See [docs/research-plan.md](docs/research-plan.md) for the status of every
+> claim and [`experiments/run_real_rl.py`](experiments/run_real_rl.py) for the harness.
 
 ## The idea
 

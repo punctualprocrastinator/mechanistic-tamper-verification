@@ -1,0 +1,9 @@
+# Core reference implementation + tests (CPU, no model downloads)
+numpy>=1.24
+cryptography>=42.0
+pytest>=8.0
+
+# For the real-model experiments (experiments/run_real_rl.py) on a GPU box only:
+# torch>=2.1
+# transformers>=5.0
+# safetensors>=0.4

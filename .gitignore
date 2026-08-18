@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.ipynb_checkpoints/
+*.egg-info/
+.venv/
+venv/
+# large embedded HTML report is generated; keep the source doc, not the build
+docs/report.html
